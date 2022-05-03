@@ -21,6 +21,12 @@ import { Overlay } from 'react-native-elements'
 // Import Auth Context
 import { AuthContext } from './../store/Context'
 
+// Import Firebase Config
+import { auth  } from './../firebase/firebase-config'
+
+// Import createUserWithEmailAndPassword form firebase/auth
+import { signInWithEmailAndPassword } from "firebase/auth"
+
 const SignInScreen = ({navigation}) => {
 
   // สร้างตัวแปรแบบ State ไว้รับค่าจากฟอร์ม
@@ -89,9 +95,9 @@ const SignInScreen = ({navigation}) => {
   // สร้างฟังก์ชันสำหรับ handleLogin
   const loginHandle = (userName, password) => {
 
-    const foundUser = Users.filter(item => {
-      return userName == item.username && password == item.password
-    })
+    // const foundUser = Users.filter(item => {
+    //   return userName == item.username && password == item.password
+    // })
 
     if (!data.isValidUser || !data.isValidPassword || (data.username.length == 0 || data.password.length == 0)) {
       // Alert.alert(
@@ -102,31 +108,55 @@ const SignInScreen = ({navigation}) => {
       setVisible(true)
       setFormError(true)
       return
-    }
-
-    if (foundUser.length == 0) {
-      // Alert.alert(
-      //   'มีข้อผิดพลาด', 
-      //   'ไม่พบชื่อผู้ใช้และรหัสผ่านนี้', 
-      //   [{ text: 'ตกลง' }])
-      setVisible(true)
-      setFormError(false)
-      setSignInError(true)
-      return
     }else{
 
+    // if (foundUser.length == 0) {
+    //   // Alert.alert(
+    //   //   'มีข้อผิดพลาด', 
+    //   //   'ไม่พบชื่อผู้ใช้และรหัสผ่านนี้', 
+    //   //   [{ text: 'ตกลง' }])
+    //   setVisible(true)
+    //   setFormError(false)
+    //   setSignInError(true)
+    //   return
+    // }else{
+      
       // Alert.alert(
       //   'สำเร็จ', 
       //   'ข้อมูลเข้าระบบถูกต้อง', 
       //   [{ text: 'ตกลง' }])
 
-      setVisible(true)
-      setFormError(false)
-      setSignInError(false)
-      setSignInSuccess(true)
+      // setVisible(true)
+      // setFormError(false)
+      // setSignInError(false)
+      // setSignInSuccess(true)
 
-      signIn(foundUser)
-      return
+      // signIn(foundUser)
+      // return
+
+      signInWithEmailAndPassword(auth, data.username, data.password)
+      .then(result => {
+        // Signed in
+        const user = result.user
+        console.log(JSON.stringify(user, null, 2))
+
+        setVisible(true)
+        setFormError(false)
+        setSignInError(false)
+
+        signIn(data.username, user.stsTokenManager.accessToken)
+        return
+
+      })
+      .catch(error => {
+        const errorCode = error.code
+        const errorMessage = error.message
+        console.log(error)
+        setVisible(true)
+        setFormError(false)
+        setSignInError(true)
+      })
+
 
     }
 

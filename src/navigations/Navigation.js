@@ -84,22 +84,17 @@ const Navigation = () => {
   // เพิ่มการใช้งาน useMemo เก็บค่าฟังก์ชันและตัวแปรต่างๆ ไว้ เมื่อโหลด component ครั้งแรก
   const authContextValue = useMemo(()=>({
 
-    signIn: async(foundUser)=>{
-
-      const userToken = String(foundUser[0].userToken)
-      const userName = foundUser[0].username
-
+    signIn: async(email, token) => {
+      const userToken = token
+      const userName = email
+      
       try {
-        // เก็บข้อมูล token ลง AsyncStorage
         await AsyncStorage.setItem('userToken', userToken);
       } catch(e) {
         console.log(e);
       }
-
-      dispatch({ type: 'LOGIN', id:userName , token:userToken  })
-
-      // setUserToken('asdf')
-      // setIsLoading(false)
+      // console.log('user token: ', userToken);
+      dispatch({ type: 'LOGIN', id: userName, token: userToken })
     },
 
     signUp: async(email, token)=>{
