@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {
   View,
   Text,
@@ -17,6 +17,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 import MainTheme, { colors } from '../themes/MainTheme'
 import { Overlay } from 'react-native-elements'
+
+import { AuthContext } from './../store/Context'
 
 import { auth } from './../firebase/firebase-config'
 import { createUserWithEmailAndPassword } from "firebase/auth"
@@ -41,6 +43,9 @@ const SignUpScreen = ({ navigation }) => {
   const [formError, setFormError] = useState(false)
   const [signUpError, setSignUpError] = useState(false)
   const [signUpSuccess, setSignUpSuccess] = useState(false)
+
+  // เรียกใช้งาน Context
+  const { signUp } = useContext(AuthContext)
 
   const textEmailChange = val => {
     if (val.trim().length >= 4) {
@@ -132,6 +137,10 @@ const SignUpScreen = ({ navigation }) => {
         setFormError(false)
         setSignUpError(false)
         setSignUpSuccess(true)
+
+        // Register Success เรียก method signup
+        signUp(data.email, user.stsTokenManager.accessToken)
+
       })
       .catch((error) => {
         const errorCode = error.code;

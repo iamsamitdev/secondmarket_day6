@@ -24,6 +24,7 @@ const Navigation = () => {
   const initialLoginState = {
     isLoading: true,
     userName: null,
+    userEmail: null,
     userToken: null,
   }
 
@@ -53,7 +54,7 @@ const Navigation = () => {
       case 'REGISTER': 
         return {
           ...prevState,
-          userName: action.id,
+          userEmail: action.id,
           userToken: action.token,
           isLoading: false,
         }
@@ -101,9 +102,14 @@ const Navigation = () => {
       // setIsLoading(false)
     },
 
-    signUp: async()=>{
-      // setUserToken('abcd')
-      // setIsLoading(false)
+    signUp: async(email, token)=>{
+      const userToken = token
+      try {
+        await AsyncStorage.setItem('userToken', userToken);
+      } catch(e) {
+        console.log(e);
+      }
+      dispatch({ type: 'REGISTER', id: email, token: userToken })
     },
 
     signOut: async()=>{
